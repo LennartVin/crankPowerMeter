@@ -4,12 +4,9 @@
 
 
 /****** General configuration ***********************/
-//#define DEBUG_PRINT_SPEED        /* Enable/Disable debug print measured angular speed */
+#define DEBUG_PRINT_SPEED        /* Enable/Disable debug print measured angular speed */
 //#define DEBUG_PRINT_FORCE        /* Enable/Disable debug print measured force */
-//#define DEBUG_PRINT_REV          /* Enable/Disable debug print measured revolution data */
-
-#define SD_LOGGING                 /* Enable/Disable logging of sensor data in SD file */
-#define SD_LOGGING_NUM_REVOLUTIONS_TO_STORE  15
+#define DEBUG_PRINT_REV          /* Enable/Disable debug print measured revolution data */
 
 //#define USE_MANUAL_I2C_PINS     /* Allow the usage of GPIO pins for I2C comms */
 
@@ -48,16 +45,17 @@
 /****** HW setup configuration *********************/
 
 /* IMU motion detection Interrupt pin, undefine it to disable feature */
-//#define IMU_INT_PIN     0
+#define IMU_INT_PIN     16
+#define INT_CYCLE_RATE  MPU6050_CYCLE_1_25_HZ
 
 /* Load cell sensor HX711 sensor pins */
-#define HX711_POS_DATA 36 
-#define HX711_NEG_CLK  23
+#define HX711_POS_DATA 12 
+#define HX711_NEG_CLK  13
 
 /* I2C pins for manual pin allocation */
 #ifdef USE_MANUAL_I2C_PINS
-#define IMU_I2C_SDA    15
-#define IMU_I2C_SCL    14
+#define IMU_I2C_SDA    4
+#define IMU_I2C_SCL    5
 #endif
 
 #define LED_WHITE_PIN   4  /* configured for ESP32-CAM */

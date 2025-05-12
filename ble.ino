@@ -3,13 +3,6 @@
  
 #include "ble.h"
 
-#ifndef DISABLE_BLE
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
-#include <BLEAdvertising.h>
-#include <BLE2902.h>
-
 const int16_t minPowLev = 0; // power level range settings, no app cares about this
 const int16_t maxPowLev = 500;
 const int16_t minPowInc = 1;
@@ -18,6 +11,14 @@ uint16_t speedOut = 100;
 int16_t powerOut = 100;
 int16_t powerOut_filter[BLE_POWER_FILTER_SAMPLES];
 int16_t powerOut_filter_pos = 0;
+
+
+#ifndef DISABLE_BLE
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+#include <BLEAdvertising.h>
+#include <BLE2902.h>
 
 #define fitnessMachineService BLEUUID((uint16_t)0x1826) // fitness machine service uuid, as defined in gatt specifications
 
@@ -146,8 +147,8 @@ void ble_PublishBatt(uint8_t battPercent) {
 void InitBLEServer() {
   BLEServer *pServer = BLEDevice::createServer();
 
+  const uint8_t rawFitnessData[] = { 0b00000001, 0b00100000, 0b00000000 };
   const std::string fitnessData = { 0b00000001, 0b00100000, 0b00000000 };  // advertising data on "Service Data AD Type" - byte of flags (little endian) and two for Fitness Machine Type (little endian)
-                                         // indoor bike supported
   advertisementData.setServiceData(fitnessMachineService, fitnessData);  // already includdes Service Data AD Type ID and Fitness Machine Service UUID
                                          // with fitnessData 6 bytes
   BLEService *pFitness = pServer->createService(fitnessMachineService);

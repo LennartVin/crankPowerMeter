@@ -46,12 +46,13 @@ bool imu_Setup(void)
     
     /* configure motion detection Interrupt - If configured */
 	#if defined(IMU_INT_PIN)
-    mpu_sensor.setMotionInterrupt(true);
+	  mpu_sensor.setMotionInterrupt(true);
   	mpu_sensor.setInterruptPinLatch(true);
 	  mpu_sensor.setInterruptPinPolarity(false); /* Active HIGH, Rising INT */
     mpu_sensor.setMotionDetectionThreshold(4);
-    mpu_sensor.setMotionDetectionDuration(80);  /* 1 LSB = 64ms. So 30s =  */
-    
+    mpu_sensor.setMotionDetectionDuration(100);  /* 1 LSB = 64ms. So 30s =  */
+    //mpu_sensor.setCycleRate(INT_CYCLE_RATE)
+
     pinMode(IMU_INT_PIN, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(IMU_INT_PIN), imu_motionDetectInterrupt, RISING);
 	#else
@@ -63,12 +64,15 @@ bool imu_Setup(void)
 
 }
 
-void imu_motionDetectInterrupt(void)
+ICACHE_RAM_ATTR void imu_motionDetectInterrupt(void)
 {
   uint8_t motion = mpu_sensor.getMotionInterruptStatus();
+
   // TODO note really clear what our power options actually are here..
   if (motion) {
     Serial.println("Go to sleep..");
+    //ESP.deepSleep(); // good night!  D0 fires a reset in 10 seconds...
+
   } else {
     Serial.println("Wakey wakey let's get crankey.");
   }
@@ -78,6 +82,7 @@ void imu_readData(void)
 {
   /* Get IMU sensor data */
   mpu_sensor.getEvent(&last_acc, &last_g, &last_temp);
+
 }
 
 double imu_getNormalAvgVelocity(double lastAvg, const double filter)
