@@ -57,12 +57,6 @@ void setup()
   }
   load_Setup();
   ble_Setup();
-#ifdef SD_LOGGING
-  if (Logging_Init_SD())
-  {
-    logging_ready = Logging_CreateNewLoggingFile();
-  }
-#endif
 
 #if defined(DEBUG_PRINT_SPEED) || defined(DEBUG_PRINT_FORCE) || defined(DEBUG_PRINT_REV)
   Serial.println(F("All setup complete."));
@@ -101,7 +95,7 @@ void get_sensor_data(void)
     crankAngle = imu_getCrankAngle();
 
     #ifdef DEBUG_PRINT_SPEED
-    Serial.print("S: ");Serial.println(cadence, 3);
+    Serial.print("Speed: ");Serial.println(cadence, 3);
     #endif
     
     lastUpdateSensor = timeNowSensor;
@@ -143,7 +137,7 @@ void calculate_power(void)
     avgForce += force;
     
     #ifdef DEBUG_PRINT_FORCE
-    Serial.print("F: ");Serial.println(force, 3);
+    Serial.print("Force: ");Serial.println(force, 3);
     #endif
     
     /* Get elapsed degrees with current speed and elapsed time */
@@ -204,17 +198,6 @@ void calculate_power(void)
         revElapsedDegrees = 0;
       }
     }
-    #ifdef SD_LOGGING
-    if (logging_ready)
-    {
-      Logging_StoreMeasurementData();
-      if (totalCrankRevs >= SD_LOGGING_NUM_REVOLUTIONS_TO_STORE)
-      {
-        Logging_CloseSDFile();
-        logging_ready = false;
-      }
-    }
-    #endif
     
     lastUpdatePowerCalc = timeNowPowerCalc;
   }
