@@ -140,6 +140,7 @@ void ble_PublishPower(int16_t instantPwr, uint16_t cadence, uint32_t crankRevs, 
  * Publish the battery status measurement.
  */
 void ble_PublishBatt(uint8_t battPercent) {
+  //TODO
   //Serial.println("BLE DUMMY PUBLISH BATT");
 }
 
@@ -148,8 +149,8 @@ void InitBLEServer() {
   BLEServer *pServer = BLEDevice::createServer();
 
   const uint8_t rawFitnessData[] = { 0b00000001, 0b00100000, 0b00000000 };
-  const std::string fitnessData = { 0b00000001, 0b00100000, 0b00000000 };  // advertising data on "Service Data AD Type" - byte of flags (little endian) and two for Fitness Machine Type (little endian)
-  advertisementData.setServiceData(fitnessMachineService, fitnessData);  // already includdes Service Data AD Type ID and Fitness Machine Service UUID
+  //const uint8_t fitnessDataRaw[] = { 0b00000001, 0b00100000, 0b00000000 };  // advertising data on "Service Data AD Type" - byte of flags (little endian) and two for Fitness Machine Type (little endian)
+  advertisementData.setServiceData(fitnessMachineService, reinterpret_cast<const char*>(rawFitnessData));  // already includdes Service Data AD Type ID and Fitness Machine Service UUID
                                          // with fitnessData 6 bytes
   BLEService *pFitness = pServer->createService(fitnessMachineService);
 
