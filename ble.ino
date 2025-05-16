@@ -27,13 +27,6 @@ int16_t powerOut_filter_pos = 0;
 BLECharacteristic* pPowerMeasurement;
 BLECharacteristic* pBatteryLevel;
 
-// required characteristics
-//BLECharacteristic fitnessMachineFeatureCharacteristics(BLEUUID((uint16_t)0x2ACC), BLECharacteristic::PROPERTY_READ);
-//BLECharacteristic indoorBikeDataCharacteristic(BLEUUID((uint16_t)0x2AD2), BLECharacteristic::PROPERTY_NOTIFY);
-//BLECharacteristic resistanceLevelRangeCharacteristic(BLEUUID((uint16_t)0x2AD6), BLECharacteristic::PROPERTY_READ);
-//BLECharacteristic powerLevelRangeCharacteristic(BLEUUID((uint16_t)0x2AD8), BLECharacteristic::PROPERTY_READ);
-//BLECharacteristic fitnessMachineControlPointCharacteristic(BLEUUID((uint16_t)0x2AD9), BLECharacteristic::PROPERTY_INDICATE | BLECharacteristic::PROPERTY_WRITE);
-//BLECharacteristic fitnessMachineStatusCharacteristic(BLEUUID((uint16_t)0x2ADA), BLECharacteristic::PROPERTY_NOTIFY);
 BLEAdvertisementData advertisementData = BLEAdvertisementData();
 
 #endif
@@ -59,9 +52,6 @@ void ble_Setup(void) {
 
 boolean ble_isConnected(void)
 {
-  #ifdef DEBUG_SETUP
-    Serial.println("BLE connection established");
-  #endif
   return true;
 }
 
@@ -82,14 +72,8 @@ void ble_PublishPower(int16_t instantPwr, uint16_t cadence, uint32_t crankRevs, 
   powerIn = powerIn/BLE_POWER_FILTER_SAMPLES;
   cadenceIn = cadence;
   
-  //speedOut = (cadenceIn * 2.75 * 2.08 * 60*gears[gearIndex]) / 10;            // calculated speed, required by the specification
-  //indoorBikeDataCharacteristicData[2] = (uint8_t)(speedOut & 0xff);
-  //indoorBikeDataCharacteristicData[3] = (uint8_t)(speedOut >> 8);             // speed value with little endian order
   //indoorBikeDataCharacteristicData[4] = (uint8_t)((cadenceIn * 2) & 0xff);        
   //indoorBikeDataCharacteristicData[5] = (uint8_t)((cadenceIn * 2) >> 8);          // cadence value
-  //indoorBikeDataCharacteristicData[6] = (uint8_t)(constrain(powerIn, 0, 4000) & 0xff);
-  //indoorBikeDataCharacteristicData[7] = (uint8_t)(constrain(powerIn, 0, 4000) >> 8);    // power value, constrained to avoid negative values, although the specification allows for a sint16
-
   uint8_t data[4] = {0}; // Declare and initialize the data buffer
   data[2] = (uint8_t)(constrain(powerIn, 0, 4000) & 0xff);
   data[3] = (uint8_t)(constrain(powerIn, 0, 4000) >> 8);  // power value, constrained to avoid negative values, although the specification allows for a sint16
@@ -103,8 +87,10 @@ void ble_PublishPower(int16_t instantPwr, uint16_t cadence, uint32_t crankRevs, 
  * Publish the battery status measurement.
  */
 void ble_PublishBatt(uint8_t battPercent) {
-  pBatteryLevel->setValue(&battPercent, 1);
-  pBatteryLevel->notify();
+  #ifndef DISABLE_BLE
+    pBatteryLevel->setValue(&battPercent, 1);
+    pBatteryLevel->notify();
+  #endif
   #ifdef DEBUG
     Serial.printf("Battery level sent via BLE: %d %%\n", battPercent);
   #endif
@@ -133,10 +119,7 @@ void InitBLEServer() {
 
   // Battery Service
   BLEService* pBatteryService = pServer->createService(BLEUUID((uint16_t)0x180F));
-  pBatteryLevel = pBatteryService->createCharacteristic(
-    BLEUUID((uint16_t)0x2A19),
-    BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY
-  );
+  pBatteryLevel = pBatteryService->createCharacteristic(BLEUUID((uint16_t)0x2A19), BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
   pBatteryLevel->addDescriptor(new BLE2902());
   uint8_t initialBattery = 100;
   pBatteryLevel->setValue(&initialBattery, 1);  // start value: 100%
