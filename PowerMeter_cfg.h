@@ -4,11 +4,11 @@
 
 
 /****** General configuration ***********************/
-#define DEBUG_PRINT_SPEED        /* Enable/Disable debug print measured angular speed */
+//#define DEBUG_PRINT_SPEED        /* Enable/Disable debug print measured angular speed */
 //#define DEBUG_PRINT_FORCE        /* Enable/Disable debug print measured force */
-#define DEBUG_PRINT_REV          /* Enable/Disable debug print measured revolution data */
-#define DEBUG_SETUP
-#define DEBUG
+//#define DEBUG_PRINT_REV          /* Enable/Disable debug print measured revolution data */
+//#define DEBUG_SETUP
+//#define DEBUG
 
 //#define USE_MANUAL_I2C_PINS     /* Allow the usage of GPIO pins for I2C comms */
 #define ESP32_BOARD_I2C
@@ -17,7 +17,8 @@
 
 #define BLE_DEV_NAME              "BicyclePowerMeter"
 #define BLE_PUBLISH_POWER_RATE    (1000u * 1u)
-#define BLE_PUBLISH_BATTERY_RATE  (1000u * 60u * 5u) /* 1000 ms / sec * 60 sec / min * 5 = 5 minutes */
+#define BLE_PUBLISH_BATTERY_RATE  (1000u * 1u)
+//#define BLE_PUBLISH_BATTERY_RATE  (1000u * 60u * 5u) /* 1000 ms / sec * 60 sec / min * 5 = 5 minutes */
 #define BLE_POWER_FILTER_SAMPLES  5                  /* Avegaraging filter applied to BLE published power, number of published samples averaged */
 
 #define SENSOR_READ_RATE          (20u)
@@ -67,6 +68,6 @@
 
 #define LED_BOARD_PIN  33  /* configured for ESP32-CAM */
 
-#define VBATPIN         5
+#define VBATPIN         0
 
 #endif

@@ -233,6 +233,9 @@ void publish_ble_data(void)
     if (timeSinceLastUpdate > BLE_PUBLISH_BATTERY_RATE)
     {
       float batPercent = checkBatt();
+      #ifdef DEBUG
+        Serial.print("Batterylevel: ");Serial.println(batPercent);
+      #endif
       ble_PublishBatt(batPercent);
       lastUpdateBleBatt = timeNowBle;
     }
@@ -293,7 +296,7 @@ double calcPower(double footSpeed, double force) {
 /**
  * 
  */
-uint8_t checkBatt() {     
+uint8_t checkBatt() {
     float measuredvbat = analogRead(VBATPIN);
     measuredvbat *= 2;    // Board divided by 2, so multiply back
     measuredvbat *= 3.3;  // Multiply by 3.3V, our reference voltage
