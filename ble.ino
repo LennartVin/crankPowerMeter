@@ -20,7 +20,7 @@ int16_t powerOut_filter_pos = 0;
 #include <BLEAdvertising.h>
 #include <BLE2902.h>
 
-#define fitnessMachineService BLEUUID((uint16_t)0x1826) // fitness machine service uuid, as defined in gatt specifications
+#define fitnessMachineService BLEUUID((uint16_t)0x1818) // fitness machine service uuid, as defined in gatt specifications
 
 // required characteristics
 BLECharacteristic fitnessMachineFeatureCharacteristics(BLEUUID((uint16_t)0x2ACC), BLECharacteristic::PROPERTY_READ);
@@ -80,29 +80,11 @@ void ble_Setup(void) {
 
 }
 
-
-void ble_startAdvertising(void) {
-
-}
-
-/*
- * Set up the power service
- */
-void ble_setupPwr(void) {
-
-}
-
-/*
- * This service exists only to publish logs over BLE.
- */
-void ble_setupLogger(void) {
-#ifdef BLE_LOGGING
-
-#endif
-}
-
 boolean ble_isConnected(void)
 {
+  #ifdef DEBUG_SETUP
+    Serial.println("BLE connection established");
+  #endif
   return true;
 }
 
@@ -146,6 +128,10 @@ void ble_PublishBatt(uint8_t battPercent) {
 
 #ifndef DISABLE_BLE
 void InitBLEServer() {
+  #ifdef DEBUG_SETUP
+    Serial.println("Start BLE Server");
+  #endif
+  
   BLEServer *pServer = BLEDevice::createServer();
 
   const uint8_t rawFitnessData[] = { 0b00000001, 0b00100000, 0b00000000 };
@@ -166,7 +152,7 @@ void InitBLEServer() {
   pFitness->addCharacteristic(&fitnessMachineStatusCharacteristic);
   fitnessMachineStatusCharacteristic.addDescriptor(new BLE2902());
 
-  advertisementData.setFlags(ESP_BLE_ADV_FLAG_BREDR_NOT_SPT+ESP_BLE_ADV_FLAG_GEN_DISC); // set BLE EDR not supported and general discoverable flags, necessary for RGT
+  //advertisementData.setFlags(ESP_BLE_ADV_FLAG_BREDR_NOT_SPT+ESP_BLE_ADV_FLAG_GEN_DISC); // set BLE EDR not supported and general discoverable flags, necessary for RGT
   pServer->getAdvertising()->addServiceUUID(fitnessMachineService);
   pServer->getAdvertising()->setAdvertisementData(advertisementData);
   pFitness->start();

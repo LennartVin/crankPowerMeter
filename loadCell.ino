@@ -6,6 +6,9 @@
 HX711 loadsensor;
 
 void load_Setup() {
+  #ifdef DEBUG_SETUP
+    Serial.println("start loadsensor setup");
+  #endif  
   loadsensor.begin(HX711_POS_DATA, HX711_NEG_CLK);
   /* Set the scale for the multiplier to get grams */
   loadsensor.set_scale(HX711_MULT_SCALE);
@@ -17,7 +20,6 @@ void load_Setup() {
   loadsensor.power_up();
 
 }
-
 
 double load_getAvgForce(const double & lastAvg, const double filter) {
   static double currentData = 0;
@@ -34,7 +36,6 @@ double load_getAvgForce(const double & lastAvg, const double filter) {
   // e.g. if weight is 0.90, it's 10% what it used to be, 90% this new reading.
   return (currentData * filter) + (lastAvg * (1 - filter));
 }
-
 
 double load_getRawData(void) {
   static double currentData = 0;

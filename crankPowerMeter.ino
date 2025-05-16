@@ -42,24 +42,29 @@ static long lastUpdateBlePower = 0u;
 static long lastUpdateBleBatt = 0u;
 static long lastUpdateCadence = 0u;
 
-static boolean logging_ready = false;
+
 
 /******* Setup *************************************/
 void setup() 
 {
   Serial.begin(115200);
-
+  delay(500);
+  #if defined(DEBUG_SETUP)
+    Serial.println("start setup...");
+  #endif
+  
   /* Setup sensors */
   if (!imu_Setup()){
-#if defined(DEBUG_PRINT_SPEED) || defined(DEBUG_PRINT_FORCE) || defined(DEBUG_PRINT_REV)
-    Serial.print(F("Imu device not found... check wiring."));
-#endif
+    #if defined(DEBUG_PRINT_SPEED) || defined(DEBUG_PRINT_FORCE) || defined(DEBUG_PRINT_REV)
+        Serial.print(F("Imu device not found... check wiring."));
+    #endif
   }
+
   load_Setup();
   ble_Setup();
 
 #if defined(DEBUG_PRINT_SPEED) || defined(DEBUG_PRINT_FORCE) || defined(DEBUG_PRINT_REV)
-  Serial.println(F("All setup complete."));
+  Serial.println(F("All setup completed"));
 #endif
 
 }

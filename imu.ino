@@ -8,9 +8,7 @@
 
 Adafruit_MPU6050 mpu_sensor;
 
-#ifdef USE_MANUAL_I2C_PINS
 TwoWire I2Cmpu = TwoWire(0);
-#endif
 
 sensors_event_t last_acc, last_g, last_temp;
 
@@ -19,17 +17,24 @@ sensors_event_t last_acc, last_g, last_temp;
  */
 bool imu_Setup(void)
 {
-#ifdef ESP32_BOARD_I2C
-  I2Cmpu.begin(_IMU_I2C_SDA, IMU_I2C_SCL, 100000);
+#ifdef DEBUG_SETUP
+  Serial.println("start IMU setup...");
+#endif
+
+#ifdef USE_MANUAL_I2C_PINS
+  I2Cmpu.begin(_IMU_I2C_SDA, _IMU_I2C_SCL, 100000);
 #endif
 
   // Try to initialize!
 #ifdef ESP32_BOARD_I2C
   if (!mpu_sensor.begin(MPU6050_I2CADDR_DEFAULT, &I2Cmpu, 0))
 #else
-  if (!mpu_sensor.begin()) 
+  if (!mpu_sensor.begin())
 #endif
   {
+  #ifdef DEBUG_SETUP
+    Serial.println("IMU sensor not found");
+  #endif
     return(false); //TODO: if init fails, block next API and report always 0
   }
   else
@@ -42,7 +47,7 @@ bool imu_Setup(void)
     // Set that calibration -- NOT supported by Adafruit
     //gyro.setZGyroOffset(IMU_GYRO_CALIBRATION_OFFSET);
 
-    //Todo, does it make sense to use cycle mode?
+    //TODO, does it make sense to use cycle mode?
     
     /* configure motion detection Interrupt - If configured */
 	#if defined(IMU_INT_PIN)
@@ -57,6 +62,10 @@ bool imu_Setup(void)
     attachInterrupt(digitalPinToInterrupt(IMU_INT_PIN), imu_motionDetectInterrupt, RISING);
 	#else
 	  mpu_sensor.setMotionInterrupt(false);
+  #endif
+
+  #ifdef DEBUG_SETUP
+    Serial.println("IMU sensor config completed");
   #endif
 	
 	return(true);
