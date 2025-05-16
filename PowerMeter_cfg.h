@@ -15,7 +15,7 @@
 
 //#define DISABLE_BLE               /* Enable/Disable BLE compilation, to allow compilation in boards without BLE (Mega, ...) for testing */
 
-#define BLE_DEV_NAME              "CiafePwr"
+#define BLE_DEV_NAME              "BicyclePowerMeter"
 #define BLE_PUBLISH_POWER_RATE    (1000u * 1u)
 #define BLE_PUBLISH_BATTERY_RATE  (1000u * 60u * 5u) /* 1000 ms / sec * 60 sec / min * 5 = 5 minutes */
 #define BLE_POWER_FILTER_SAMPLES  5                  /* Avegaraging filter applied to BLE published power, number of published samples averaged */
@@ -44,7 +44,6 @@
 
 #define HOOKEDUPLOADBACKWARDS          -1   /* To allow to invert load cell sensor measurement, set 1 or -1 */
 
-
 /****** HW setup configuration *********************/
 
 /* IMU motion detection Interrupt pin, undefine it to disable feature */
@@ -66,9 +65,8 @@
 #define _IMU_I2C_SDA    9
 #endif
 
-#define LED_WHITE_PIN   4  /* configured for ESP32-CAM */
 #define LED_BOARD_PIN  33  /* configured for ESP32-CAM */
 
-#define VBATPIN         0 //Not supported yet
+#define VBATPIN         5
 
 #endif
